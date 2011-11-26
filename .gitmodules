@@ -1,0 +1,3 @@
+[submodule "dougm-cookbooks"]
+	path = dougm-cookbooks
+	url = https://github.com/dougm/site-cookbooks.git
