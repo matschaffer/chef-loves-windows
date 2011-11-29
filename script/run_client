@@ -1,0 +1,6 @@
+#!/bin/sh
+
+HOST="$1"
+PASS="$2"
+
+knife winrm -m "$HOST" -x Administrator -P "$PASS" 'chef-client -c c:/chef/client.rb -j c:/chef/first-boot.json'
