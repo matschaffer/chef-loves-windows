@@ -3,5 +3,4 @@
 HOST="$1"
 PASS="$2"
 
-knife bootstrap windows winrm "$HOST" -r "role[iis_server]" -x Administrator -P "$PASS"
-knife winrm -m "$HOST" -x Administrator -P "$PASS" 'chef-client -c c:/chef/client.rb -j c:/chef/first-boot.json'
+knife bootstrap windows winrm "$HOST" -r "role[hello_world]" -x Administrator -P "$PASS"
