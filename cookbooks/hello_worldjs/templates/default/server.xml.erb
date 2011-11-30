@@ -1,0 +1,7 @@
+<service>
+  <id><%= @service_name %></id>
+  <name>Hello World Node App</name>
+  <description>Runs hello world node app as a service</description>
+  <executable>C:\opscode\chef\embedded\bin\ruby.exe</executable>
+  <arguments><%= @base %>\server.js</arguments>
+</service>
