@@ -27,8 +27,8 @@ creds = YAML.load_file(creds_file)
 compute = Fog::Compute.new({:provider => 'AWS'}.merge(creds))
 
 server = compute.servers.create(:image_id  => 'ami-fdf93094',
-                                # :flavor_id => 'm1.large',
-                                :flavor_id => 't1.micro',
+                                :flavor_id => 'm1.large',
+                                # :flavor_id => 't1.micro',
                                 :key_name  => "chef-windows",
                                 :groups => ['windows'])
 puts "Started server #{server.id}"
