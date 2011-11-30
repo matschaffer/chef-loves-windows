@@ -3,4 +3,5 @@
 HOST="$1"
 PASS="$2"
 
-knife bootstrap windows winrm "$HOST" -x Administrator -P "$PASS"
+knife bootstrap windows winrm "$HOST" -x Administrator -P "$PASS" \
+  -r "role[hello_worldjs]"
