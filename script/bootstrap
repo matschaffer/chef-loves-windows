@@ -1,0 +1,6 @@
+#!/bin/sh
+
+HOST="$1"
+PASS="$2"
+
+knife bootstrap windows winrm "$HOST" -x Administrator -P "$PASS"

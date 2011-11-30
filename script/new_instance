@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'fog'
+
+require 'pathname'
+require 'yaml'
+require 'openssl'
+require 'base64'
+
+creds_file = Pathname.new(__FILE__).dirname.join('creds.yml')
+key_file = Pathname.new(ENV['HOME']).join('.ssh', 'chef-windows.pem')
+
+abort <<-MSG unless creds_file.exist?
+  Please put your aws keys into #{creds_file} like so:
+    :aws_access_key_id: 1234
+    :aws_secret_access_key: ABCD
+MSG
+
+abort <<-MSG unless key_file.exist?
+  Please create a chef-windows key pair and place it in
+  #{key_file}
+MSG
+
+creds = YAML.load_file(creds_file)
+
+compute = Fog::Compute.new({:provider => 'AWS'}.merge(creds))
+
+server = compute.servers.create(:image_id  => 'ami-fdf93094',
+                                # :flavor_id => 'm1.large',
+                                :flavor_id => 't1.micro',
+                                :key_name  => "chef-windows",
+                                :groups => ['windows'])
+puts "Started server #{server.id}"
+
+server.wait_for { ready? }
+
+puts "Waiting for password generation..."
+encrypted_password = nil
+while !encrypted_password
+  password_data = compute.get_password_data(server.id)
+  encrypted_password = password_data.body["passwordData"]
+  sleep 1
+end
+
+key = OpenSSL::PKey::RSA.new(key_file.read)
+password = key.private_decrypt(Base64.decode64(encrypted_password))
+
+puts <<-MSG
+Server is ready at:
+  #{server.dns_name}
+  Username: Administrator
+  Password: #{password}
+
+Run these commands to enable WinRM:
+  winrm quickconfig -q
+  winrm set winrm/config/winrs @{MaxMemoryPerShellMB="300"}
+  winrm set winrm/config @{MaxTimeoutms="1800000"}
+  winrm set winrm/config/service/auth @{Basic="true"}
+  winrm set winrm/config/service @{AllowUnencrypted="true"}
+MSG
+

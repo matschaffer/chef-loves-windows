@@ -1,6 +1,0 @@
-#!/bin/sh
-
-HOST="$1"
-PASS="$2"
-
-knife bootstrap windows winrm "$HOST" -r "role[hello_world]" -x Administrator -P "$PASS"
