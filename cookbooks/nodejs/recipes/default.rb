@@ -6,13 +6,9 @@
 #
 
 version = "0.6.3"
-node_installer = "c:\\windows\\temp\\node-v#{version}.msi"
 
-remote_file node_installer do
-  source "http://nodejs.org/dist/v0.6.3/node-v0.6.3.msi"
-  not_if { File.exists?(node_installer) }
-end
-
-execute "install node-v#{version}" do
-  command "msiexec /qb /i #{node_installer}"
+windows_package "Node.js version #{version}" do
+  source "http://nodejs.org/dist/v#{version}/node-v#{version}.msi"
+  version version
+  action :install
 end
