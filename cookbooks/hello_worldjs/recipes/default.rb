@@ -10,7 +10,9 @@ base = 'c:\node\hello_world'
 exe = base + '\server.exe'
 service_name = "node_server"
 
-directory base
+directory base do
+  recursive true
+end
 
 cookbook_file "#{base}/server.js"
 
@@ -24,12 +26,16 @@ remote_file exe do
   not_if { File.exists?(exe) }
 end
 
-execute "#{exe} install" do
-  cwd home
+winsw_wrapper exe do
+  action :install
   only_if { WMI::Win32_Service.find(:first, :conditions => {:name => service_name}).nil? }
 end
 
 service service_name do
   action :start
   subscribes :restart, resources(:cookbook_file => "#{base}/server.js")
+end
+
+execute "firewall hello_worldjs enable" do
+  command "netsh advfirewall firewall add rule name=\"Hello World JS\" dir=in action=allow protocol=TCP localport=1337"
 end
